@@ -1,0 +1,980 @@
+//0 android 创建按钮
+Button button = new Button(this);
+
+//1 android 创建输入框
+EditText editText = new EditText(this);
+
+//2 android 创建文本
+TextView textView = new TextView(this);
+
+//3 android 设置文本显示内容
+TextView textView = new TextView(this);
+textView.setText("hello world!");
+
+//4 android 设置文本背景色
+TextView textView = new TextView(this);
+textView.setBackgroundColor(Color.YELLOW);
+
+//5 android 设置文本颜色
+TextView textView = new TextView(this);
+textView.setTextColor(Color.YELLOW);
+
+//6 android 设置文本文字大小
+TextView textView = new TextView(this);
+textView.setTextSize(18);
+
+//7 android 设置输入框宽度
+EditText editText = new EditText(this);
+editText.setWidth(200);
+
+//8 android 设置输入框为密码框
+EditText editText = new EditText(this);
+editText.setTransformationMethod(
+PasswordTransformationMethod.getInstance());
+
+//9 android 设置输入框为密码框（xml配置）
+android:password="true"
+
+//10 android 提示对话框的使用
+AlertDialog.Builder builder = new AlertDialog.Builder(this);
+builder.setTitle("你好");
+builder.setPositiveButton("OK",this);
+builder.show()
+//需实现android.content.DialogInterface.OnClickListener接口
+
+//11 android ListView的使用
+ListView listView = new ListView(this);
+ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+SimpleAdapter adapter = new SimpleAdapter(this,list,R.layout.list,new String[]{"标题"},new int[]{R.id.TextView01});
+listView.setAdapter(adapter);
+listView.setOnItemClickListener(this);
+//然后实现OnItemClickListener接口
+public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
+
+//12 android 更新ListView
+ListView listView = new ListView(this);
+ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+SimpleAdapter adapter = new SimpleAdapter(this,list,R.layout.list,new String[]{"标题"},new int[]{R.id.TextView01});
+listView.setAdapter(adapter);
+adapter.notifyDataSetChanged();//通知更新ListView
+
+//13 android 创建LinearLayout
+LinearLayout layoutParant = new LinearLayout(this);
+
+//14 android 时间设置对话框的使用
+DatePickerDialog dlg = new DatePickerDialog(this,this,year,month,day);
+dlg.show();
+/*year month day 均为int型，第二个参数为this时，该类需要implements OnDateSetListener并重写
+public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth) {}*/
+
+
+//15 android 创建FrameLayout
+FrameLayout layout = new FrameLayout(this);
+
+//16 android 触发键盘事件
+layout.setOnKeyListener(this);
+//需要implements OnKeyListener并重写以下方法
+public boolean onKey(View v, int keyCode, KeyEvent event) {
+return false;//返回是否销毁该事件以接收新的事件，比如返回true按下时可以不断执行这个方法，返回false则执行一次。
+}
+
+//17 android 触发鼠标事件
+layout.OnTouchListener(this);
+//需要implements OnTouchListener并重写以下方法
+public boolean onTouch(View v, MotionEvent event) {
+return false;//返回是否销毁该事件以接收新的事件，比如返回true按下时可以不断执行这个方法，返回false则执行一次。
+}
+
+//18 android 获得屏幕宽度和高度
+int width = this.getWindow().getWindowManager().getDefaultDisplay().getWidth();
+int height =this.getWindow().getWindowManager().getDefaultDisplay().getHeight();
+
+//19 android 布局添加控件
+LinearLayout layout = new LinearLayout(this);
+Button button = new Button(this);
+layout.addView(button);
+
+//20 android intent实现activit之间跳转
+Intent intent = new Intent();
+intent.setClass(this, DestActivity.class);
+startActivity(intent);
+
+//21 android intent设置action
+Intent intent = new Intent();
+intent.setAction(intent.ACTION_DIAL);
+
+//22 android intent设置data
+Intent intent = new Intent();
+intent.setData(Uri.parse("tel:00000000"));
+
+//23 android intent传数据
+Intent intent = new Intent();
+intent.putExtra("data", value);//value可以是很多种类型，在接收activity中取出后强制转换或调用相应类型的get函数。
+
+//24 android intent取数据
+String value = (String)getIntent().getExtras().get("data");
+//or
+String value = getIntent().getExtras().getString("data");
+
+//25 android 利用paint和canvas画图
+setContentView(new MyView(this));
+class MyView extends View
+{
+public MyView(Context context)
+{
+super(context);
+}
+public void onDraw(Canvas canvas)
+{
+Paint paint = new Paint();//创建画笔
+paint.setColor(Color.BLUE);//设置画笔颜色 canvas.drawRect(0, 0, 100, 100, paint);//画个正方形，坐标0，0，100，100。
+}　}
+
+//26 android 新建对话框
+Dialog dialog = new Dialog(this);
+dialog.setTitle("test");//设置标题
+dialog.addContentView(button,new LayoutParams(-1,-1));//添加控件,-1是设置高度和宽度充满布局，-2是按照需要设置宽度高度。
+dialog.show();
+
+//27 android 取消对话框
+dialog.cancel();
+
+//28对View类刷新显示
+view.invalidate();//通过这个调用view的onDraw()函数
+
+//29 android 使用SurfaceView画图
+setContentView(new MySurfaceView(this));
+class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
+{
+SurfaceHolder holder;
+public MySurfaceView(Context context) 
+{
+super(context);
+holder = getHolder();
+holder.addCallback(this);
+}
+class MyThread extends Thread
+{
+public void run()
+{    Canvas canvas = holder.lockCanvas();  Paint paint = new Paint();paint.setColor(Color.YELLOW);   canvas.drawRect(100, 100, 200, 200, paint);
+holder.unlockCanvasAndPost(canvas);
+}
+}
+public void surfaceChanged(SurfaceHolder holder, int format, int width,int height) {
+}
+public void surfaceCreated(SurfaceHolder holder) {
+new MyThread().start();　}
+public void surfaceDestroyed(SurfaceHolder holder) {}
+}
+
+//30 android 获得控件findViewById
+TextView textView = (TextView) findViewById(R.id.TextView01);
+
+//31 android 十六进制设置画笔颜色
+Paint paint = new Paint();
+paint.setColor(0xffffffff);//第一个ff是透明度的设置。
+
+//32 android 获得String.xml中配置的字符串
+//在activity中直接调用
+getText(R.string.app_name);
+
+//33 android 去掉应用程序头部
+requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+//34 android 使用SharedPreferences写入数据代码
+getSharedPreferences("data", 0).edit().putString("aa","bb").commit();
+
+//35 android 使用SharedPreferences读取数据代码
+String data = getSharedPreferences("data", 0).getString("item","");//后面的""是默认值，没有取到则赋值为""，如果不想有默认，可以设置null。
+
+//36 android 继承SQLiteOpenHelper
+class MyHelper extends SQLiteOpenHelper
+{
+public MyHelper(Context context, String name, CursorFactory factory,int version) {
+super(context, name, factory, version);
+}
+public void onCreate(SQLiteDatabase db) 
+{
+db.execSQL(
+"CREATE TABLE IF NOT EXISTS testtable (" +
+"cardno integer primary key," +
+"username varchar," + 
+"money integer"+")");　}
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+{
+db.execSQL("DROP TABLE IF EXISTS testtable");
+onCreate(db);
+}　}
+
+//37 android 利用SQLiteOpenHelper打开数据库
+MyHelper dbHelper = new MyHelper(this, "testtable.db", null, 1);
+SQLiteDatabase db = dbHelper.getReadableDatabase();//打开只读
+//或者
+SQLiteDatabase db = dbHelper.getWritableDatabase();//打开可写
+
+//38 android 查询数据表并显示结果
+Cursor cursor = db.query("testtable", null, null, null, null, null, null);
+//db的获得请参见“利用SQLiteOpenHelper打开数据库”
+while(!cursor.isAfterLast()){
+Log.i("test",cursor.getString(0));
+cursor.moveToNext();　}
+
+//39 android Logcat输出打印测试信息
+Log.i("TAG","TEST");
+
+//40 android 数据表插入数据
+ContentValues values = new ContentValues();
+values.put("username","admin");
+values.put("money","10000");
+db.insert("testtable", null, values);
+
+//41 android 使得应用全屏
+getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN,WindowManager.LayoutParams. FLAG_FULLSCREEN); 
+
+//42 android 设置LinearLayout方向为竖
+layoutParant.setOrientation(LinearLayout.VERTICAL);
+
+//43 android 设置LinearLayout方向为横
+layoutParant.setOrientation(LinearLayout.HORIZONTAL);
+
+//44 android 数据库更新数据
+ContentValues values = new ContentValues();
+values.put("username","admin");
+values.put("money","10000");
+db.update("testtable",values,"userno=1",null);
+
+//45 android 数据库删除数据
+db.delete("testtable","userno=1",null);
+
+//46 android 判断sd卡是否存在
+if (android.os.Environment.getExternalStorageState().equals( 
+android.os.Environment.MEDIA_MOUNTED))
+{　Log.i("test","SDCARD exists");　}
+else {
+Log.i("test","SDCARD doesn't exist");　}
+
+//47 android 创建ImageView
+ImageView view = new ImageView(this); 
+view.setImageResource(R.drawable.icon);
+
+//48 android 提示信息
+Toast toast = Toast.makeText(this, "hello", Toast.LENGTH_LONG); 
+toast.show();
+
+//49 android 创建单选框以及单选组
+RadioButton radioButton = new RadioButton(this);
+RadioButton radioButton2 = new RadioButton(this);
+radioButton.setText("yes");
+radioButton2.setText("no");
+RadioGroup radioGroup = new RadioGroup(this);
+radioGroup.addView(radioButton);
+radioGroup.addView(radioButton2);
+
+//50 android 新建播放器
+MediaPlayer MediaPlayer = new MediaPlayer();
+
+//51 android 媒体播放器使用
+//创建MediaPlayer
+MediaPlayer player = new MediaPlayer();
+//重置MediaPlayer
+player.reset();
+try {
+//设置要播放的文件的路径  player.setDataSource("/sdcard/1.mp3");
+//准备播放   player.prepare();
+}
+catch (Exception e) {}
+//开始播放
+player.start();
+//设置播放完毕事件
+player.setOnCompletionListener(new OnCompletionListener(){
+public void onCompletion(MediaPlayer player) {
+//播完一首循环try {
+//再次准备播放   player.prepare();
+}    catch (Exception e) {}   player.start();
+}});
+
+//52 android 媒体播放器暂停
+player.pause();
+
+//53 android 清空cookies
+CookieManager.getInstance().removeAllCookie();
+
+//54 android 文本设置粗体
+TextView textView = new TextView(this);
+TextPaint textPaint = textView.getPaint();
+textPaint.setFakeBoldText(true);
+
+//55 android 网络权限配置
+<uses-permission android:name="android.permission.INTERNET" />
+
+//56 android GL设定背景色
+gl.glClearColor(0.5f, 0.2f, 0.2f, 1.0f);
+gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+
+//57 android 创建GL画布
+public class My3DView extends GLSurfaceView {
+private GLSurfaceView.Renderer renderer;
+public My3DView(Context context) {
+super(context);
+renderer = new My3DRender();
+setRenderer(renderer);
+}}
+
+//58 android 创建复选框
+CheckBox checkBox = new CheckBox(this);
+
+//59 android 复选框监听选择/取消事件
+checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+Log.i("QSR","TEST");
+}　});
+
+//60 android 创建菜单
+//重写下面这个函数
+public boolean onCreateOptionsMenu(Menu menu) {  
+super.onCreateOptionsMenu(menu);  
+menu.add(0, 1, 1, "test1");  
+menu.add(0, 2, 2, "test2");  
+menu.add(0, 3, 3, "test3");  
+menu.add(0, 4, 4, "test4");  
+return true; 
+
+//61 android 处理菜单选择事件
+public boolean onOptionsItemSelected(MenuItem item)
+{
+int id = item.getItemId();
+switch (id) {
+case 1:
+Log.i("QSR","1");
+break;
+case 2:
+Log.i("QSR","2");
+break;
+case 3:
+Log.i("QSR","3");
+break;
+case 4:
+Log.i("QSR","4");
+break;
+default:
+break;　}
+return super.onOptionsItemSelected(item);
+}　} 
+
+//62 android 允许程序访问GPS(XML配置)
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+//63 android 允许程序访问GSM网络信息(XML配置)
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+//64 android 允许程序访问WIFI网络信息(XML配置)
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+//65 android 允许程序更新电池状态(XML配置)
+<uses-permission android:name="android.permission.BATTERY_STATS"/>
+
+//66 android 允许程序写短信(XML配置)
+<uses-permission android:name="android.permission.WRITE_SMS"/>
+
+//67 android 允许程序设置壁纸(XML配置)
+<uses-permission android:name="android.permission.SET_WALLPAPER"/>
+
+//68 android 允许程序使用蓝牙(XML配置)
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+//69 android 允许程序打电话(XML配置)
+<uses-permission android:name="android.permission.CALL_PHONE"/>
+
+//70 android 允许程序使用照相设备(XML配置)
+<uses-permission android:name="android.permission.CAMERA"/>
+
+//71 android 允许程序改变网络状态(XML配置)
+<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+
+//72 android 允许程序改变WIFI状态(XML配置)
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+
+//73 android 允许程序删除缓存文件(XML配置)
+<uses-permission android:name="android.permission.DELETE_CACHE_FILES"/>
+
+//74 android 允许程序删除包(XML配置)
+<uses-permission android:name="android.permission.DELETE_PACKAGES"/>
+
+//75 android 允许程序禁用键盘锁(XML配置)
+<uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+
+//76 android 允许程序获取任务信息(XML配置)
+<uses-permission android:name="android.permission.GET_TASKS"/>
+
+//77 android 允许程序截获鼠标或键盘等事件(XML配置)
+<uses-permission android:name="android.permission.INJECT_EVENTS"/>
+
+//78 android 允许程序使用socket(XML配置)
+<uses-permission android:name="android.permission.INTERNET"/>
+
+//79 android 允许程序读取日历(XML配置)
+<uses-permission android:name="android.permission.READ_CALENDAR"/>
+
+//80 android 允许程序读取系统日志(XML配置)
+<uses-permission android:name="android.permission.READ_LOGS"/>
+
+//81 android 允许程序读取所有者数据(XML配置)
+<uses-permission android:name="android.permission.READ_OWNER_DATA"/>
+
+//82 android 允许程序读取短信(XML配置)
+<uses-permission android:name="android.permission.READ_SMS"/>
+
+//83 android 允许程序重启设备(XML配置)
+<uses-permission android:name="android.permission.REBOOT"/>
+
+//84 android 允许程序录制音频(XML配置)
+<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+//85 android 允许程序发送短信(XML配置)
+<uses-permission android:name="android.permission.SEND_SMS"/>
+
+//86 android 允许程序将自己置为最前(XML配置)
+<uses-permission android:name="android.permission.SET_PROCESS_FOREGROUND"/>
+
+//87 android 创建图像图片Bitmap
+Resources res = getResources();
+Bitmap bitmap = BitmapFactory.decodeResource(res, R.drawable.hh);
+
+//88 android 取得远程图片
+HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+conn.connect();
+InputStream is = conn.getInputStream();
+bitmap = BitmapFactory.decodeStream(is);
+is.close();
+
+//89 android 允许程序发送短信(XML配置)
+<uses-permission android:name="android.permission.SEND_SMS"/>
+
+//90 android 启动和结束服务
+startService(new Intent("qsr.test.MyService"));
+stopService(new Intent("qsr.test.MyService"));
+
+//91 android 创建和配置Service
+public class MyService extends Service {
+public IBinder onBind(Intent arg0) {return null;}
+public void onStart(Intent intent,int startId)
+{
+super.onStart(intent, startId);
+//to do something when start
+}
+public void onDestroy()
+{
+super.onDestroy();
+//to do something when stop
+}　}
+//xml配置
+<service android:name=".MyService">
+<intent-filter>
+<action android:name="android.intent.action.TEST_SERVICE" />
+<category a76ndroid:name="android.intent.category.default" />
+</intent-filter>
+</service>
+
+//92 android 获得系统感应设备
+SensorManager sensorManager =  
+    (SensorManager)getSystemService(Context.SENSOR_SERVICE); 
+
+//93 android 设置控件布局参数
+textView01.setLayoutParams
+(
+new AbsoluteLayout.LayoutParams(100,60,0,0);//高100，宽60，x=0，y=0；
+);
+
+//94 android 创建Drawable对象
+Resources res = getResources();
+Drawable drawable = res.getDrawable(R.drawable.hh);
+
+//95 android 访问网页
+Uri uri = Uri.parse("http://www.google.com");
+Intent intent  = new Intent(Intent.ACTION_VIEW,uri);
+startActivity(intent);
+
+//96 android 打电话
+Uri uri = Uri.parse("tel:00000000");
+Intent intent = new Intent(Intent.ACTION_DIAL, uri); 
+startActivity(intent); 
+
+//97 android 播放歌曲
+Intent intent = new Intent(Intent.ACTION_VIEW);
+Uri uri = Uri.parse("file:///sdcard/test.mp3");
+intent.setDataAndType(uri, "audio/mp3");
+startActivity(intent);
+
+//98 android 发送邮件
+Intent intent=new Intent(Intent.ACTION_SEND);     
+intent.putExtra(Intent.EXTRA_TEXT, "The email text");     
+intent.setType("text/plain");     
+startActivity(Intent.createChooser(intent, "Choose Email Client"));
+
+//99 android 发短信
+Uri uri = Uri.parse("smsto:123456789"); 
+Intent intent = new Intent(Intent.ACTION_SENDTO, uri);   
+intent.putExtra("sms_body", "The SMS text");   
+startActivity(intent);
+
+//100 android 安装程序
+Uri installUri = Uri.fromParts("package", "xxx", null);
+Intent intent = new Intent(Intent.ACTION_PACKAGE_ADDED, installUri); 
+startActivity(intent);
+
+//101 android 卸载程序
+Uri uninstallUri = Uri.fromParts("package", "xxx", null);
+Intent intent = new Intent(Intent.ACTION_DELETE, uninstallUri); 
+startActivity(intent);
+
+//102 android 从xml配置获得控件对象
+//TestActivity.java
+textView = (TextView) findViewById(R.id.TextView01);
+//main.xml
+< TextView android:text = "TextView01"
+android:id = "@+id/TextView01"
+android:layout_width = "wrap_content"
+android:layout_height = "wrap_content"
+android:layout_x = "60px"
+android:layout_y = "60px"/>
+
+//103 android 获得触摸屏压力
+public boolean onTouch(View v, MotionEvent event) {
+float pressure = event.getPressure();
+return false;
+}
+
+//104 android 给文本加上滚动条
+TextView textView = new TextView(this);
+textView.setText(string);
+ScrollView scrollView = new ScrollView(this);
+scrollView.addView(textView);
+setContentView(scrollView);
+
+//105 android 获得正在运行的所有服务
+public void onCreate(Bundle savedInstanceState) {
+super.onCreate(savedInstanceState);
+StringBuffer serviceInfo = new StringBuffer();
+ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+List<RunningServiceInfo> services = activityManager.getRunningServices(256);
+Iterator<RunningServiceInfo> iterator = services.iterator();
+while (iterator.hasNext()) {
+RunningServiceInfo si = (RunningServiceInfo)iterator.next();
+serviceInfo.append("pid: ").append(si.pid);
+serviceInfo.append("process: ").append(si.process);
+}
+TextView textView = new TextView(this);
+textView.setText(serviceInfo.toString());
+ScrollView scrollView = new ScrollView(this);
+scrollView.addView(textView);
+setContentView(scrollView);
+}
+
+//106 android 使用ContentResolver获得联系人姓名和号码
+ContentResolver cr = getContentResolver();
+Cursor cur = cr.query(People.CONTENT_URI, null, null, null, null);
+cur.moveToFirst();
+do {
+int nameColumn = cur.getColumnIndex(People.NAME);
+int phoneColumn = cur.getColumnIndex(People.NUMBER);
+String name = cur.getString(nameColumn);
+String phoneNumber = cur.getString(phoneColumn);
+Toast.makeText(this,name,Toast.LENGTH_LONG).show();
+Toast.makeText(this,phoneNumber,Toast.LENGTH_LONG).show();
+} while (cur.moveToNext());
+
+//107 android 创建WebView
+WebView webView = new WebView(this);
+webView.loadData("<html>"+"<head>test</head>"+"<body>test</body>"+"</html>", "text/html", "utf-8");
+
+//108 android 设置地图是否显示卫星和街道
+mapView.setSatellite(false); 
+mapView.setStreetView(true);
+
+//109 android 单选框清除
+radioGroup.clearCheck();
+
+//110 android 给文本增加链接
+Linkify.addLinks(mTextView01,Linkify.WEB_URLS);
+Linkify.addLinks(mTextView02,Linkify.EMAIL_ADDRESSES);
+Linkify.addLinks(mTextView03,Linkify.PHONE_NUMBERS);
+
+
+//111 android 设置手机震动
+Vibrator vibrator = (Vibrator)getApplication().getSystemService(Service.VIBRATOR_SERVICE);
+vibrator.vibrate( new long[]{1000,1000,1000,1000},-1);//震动一秒，停一秒，再震一秒
+
+//112 android 创建下拉框
+Spinner spinner = new Spinner(this);
+
+//113 android 给spinner添加事件
+spinner.setOnItemSelectedListener(
+new Spinner.OnItemSelectedListener()
+    {
+      public void onItemSelected(AdapterView<?> parent,View view,int position,long id)
+      { }
+      public void onNothingSelected(AdapterView<?> parent)
+      { } });
+
+//114 android 图片的显示方式
+ImageView imageView = new ImageView(this);
+imageView.setScaleType(ImageView.ScaleType.FIT_XY);//适应大小
+imageView.setScaleType(ImageView.ScaleType.CENTER);//原始大小，居中显示
+
+//115 android 取得缓存目录
+File cacheDir = this.getCacheDir();
+
+//116 android 取得当前文件目录
+File fileDir = this.getFilesDir();
+
+//117 android 判断当前wifi是否可用
+WifiManager aWiFiManager = (WifiManager)
+this.getSystemService(Context.WIFI_SERVICE);
+boolean isEnabled = aWiFiManager .isWifiEnabled);
+
+//118 android 判断当前wifi是否已经打开
+WifiManager aWiFiManager = (WifiManager)
+this.getSystemService(Context.WIFI_SERVICE);
+if(aWiFiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED)
+Log.i("TEST","it is open");
+
+//119 android 判断SIM卡状态
+TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+if(telephonyManager.getSimState()==telephonyManager.SIM_STATE_READY)
+    {  Log.i("TEST","正常");  }
+    else if(telephonyManager.getSimState()==telephonyManager.SIM_STATE_ABSENT)
+    {　Log.i("TEST","无SIM卡");　}
+
+//120 android 取得SIM卡商名称
+TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+String name = telephonyManager.getSimOperatorName();
+
+//121 android 为activity增加键盘事件
+public boolean onKeyDown(int keyCode, KeyEvent event)
+{　switch(keyCode)
+{
+case KeyEvent.KEYCODE_DPAD_UP:
+  Log.i("上",String.valueOf(keyCode));
+  break;
+case KeyEvent.KEYCODE_DPAD_DOWN:
+  Log.i("下",String.valueOf(keyCode));
+  break;
+case KeyEvent.KEYCODE_DPAD_LEFT:
+  Log.i("左",String.valueOf(keyCode));
+  break;
+case KeyEvent.KEYCODE_DPAD_RIGHT:
+  Log.i("右",String.valueOf(keyCode));
+  break;
+case KeyEvent.KEYCODE_DPAD_CENTER:
+  Log.i("中",String.valueOf(keyCode));
+  break;
+}
+  return super.onKeyDown(keyCode, event);
+}
+
+//122 android 显示正在运行的程序
+ActivityManager mActivityManager = (ActivityManager)
+getSystemService(ACTIVITY_SERVICE);
+List<ActivityManager.RunningTaskInfo> mRunningTasks = 
+mActivityManager.getRunningTasks(100);
+for (ActivityManager.RunningTaskInfo task : mRunningTasks)
+{
+String taskInfo = task.baseActivity.getClassName()
++"(ID=" + amTask.id +")");
+}
+
+//123 android 切换横竖屏
+if(getRequestedOrientation()==
+ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+{
+setRequestedOrientation
+(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+}
+else if(getRequestedOrientation()==
+ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+{
+setRequestedOrientation
+(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+}
+//PORTRAIT竖；LANDSCAPE横
+
+//124 android 判断网络类型是否为GPRS
+TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+if(telephonyManager.getNetworkType()==telephonyManager.NETWORK_TYPE_GPRS)
+
+//125 android 发送http请求给网页
+String uriAPI = "http://127.0.0.1:8080/test/index.jsp";
+HttpPost httpRequest = new HttpPost(uriAPI); 
+List <NameValuePair> params = new ArrayList <NameValuePair>(); 
+params.add(new BasicNameValuePair("username", "test"));
+try 
+{ 
+httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8)); 
+HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest); 
+if(httpResponse.getStatusLine().getStatusCode() == 200)  
+{ 
+String strResult = EntityUtils.toString(httpResponse.getEntity()); 
+} } 
+catch (IOException e) 
+{  e.printStackTrace(); } 
+
+//126 android 创建带图片的按钮
+ImageButton imageButton = new ImageButton(this);
+imageButton.setImageResource(R.drawable.test);
+
+//127 android 创建WebView
+LinearLayout layout = new LinearLayout(this);
+Button button = new Button(this);
+layout.addView(button);
+layout.removeView(button);
+
+//128 android layout设置背景图片
+LinearLayout layout = new LinearLayout(this);
+layout.setBackgroundResource(R.drawable.hh);//图片放在drawable下了，名字是hh.jpg
+
+//129 android 设置铃声
+Intent intent = new Intent( RingtoneManager.
+ACTION_RINGTONE_PICKER);
+
+//130 android 设置网络 请求方式/缓存/格式/编码
+HttpURLConnection con=(HttpURLConnection)url.openConnection();
+con.setUseCaches(false);//不使用缓存
+con.setRequestMethod("POST");//请求方式是post
+con.setRequestProperty("Content-Type", "text/xml");//格式
+con.setRequestProperty("Charset", "UTF-8");//编码
+
+//131 android 判断是否为有效的网络url
+URLUtil.isNetworkUrl(strPath)
+
+//132 android 创建垂直滚动条
+ScrollView scrollView = new ScrollView(this);
+
+//133 android 创建水平滚动条
+HorizontalScrollView horizontalScrollView = new HorizontalScrollView(this);
+
+//134 android 创建自动完成文本框
+AutoCompleteTextView autoCompleteTextView = new AutoCompleteTextView(this);
+
+//135 android 创建地图控件MapView
+MapView mapView = new MapView(this);
+
+//136 android 设置地图放大系数
+mapController = mapView.getController();
+mapController.setZoom(12); 
+
+//137 android layout增加和删除控件
+LinearLayout layout = new LinearLayout(this);
+Button button = new Button(this);
+layout.addView(button);
+layout.removeView(button);
+
+//138 android 刷新地图显示函数
+//继承MapActivity并重写以下方法
+public void refreshMapView() 　{}
+
+//139 android 创建LocationManager
+LocationManager locationManager = 
+(LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
+//140 android 设置webView的javascript有效
+WebView webView = new WebView(this);
+webView.setJavaScriptEnabled(true);
+
+//141 android 设置webView的保存密码有效
+WebView webView = new WebView(this);
+webSettings.setSavePassword(true);
+
+//142 android 获得PowerManager
+PowerManager powerManager = (PowerManager)getSystemService(Context.POWER_SERVICE);
+
+//143 android 相机的预览
+parameters.setPreviewSize(640, 480);
+//参数的其他设定参考“设置相机图片大小和像素等”
+camera.setPreviewDisplay(surfaceHolder);
+//这里是个SurfaceHolder对象
+camera.startPreview();
+camera.stopPreview();
+
+//144 android Google Map的移动
+GeoPoint point = new GeoPoint(xxx, yyy);
+MapController controller = mapView.getController(); 
+controller.animateTo(point);
+
+//145 android 设置画笔粗细
+Paint paint= new Paint();
+paint.setStrokeWidth(1);
+
+//146 android 打开相机
+Camera.open();
+
+//147 android 设置相机图片大小和像素等
+Camera.Parameters parameters = camera.getParameters();
+//设置相片格式为JPEG
+parameters.setPictureFormat(PixelFormat.JPEG);
+//设置图片分辨率大小
+parameters.setPictureSize(640, 480);
+camera.setParameters(parameters);
+
+//148 android 将屏幕亮着
+PowerManager.WakeLock wakeLock = mPowerManager.newWakeLock
+(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "BackLight");
+
+//149 android 暂停和恢复activity
+protected void onPause()
+{　 super.onPause();　}
+protected void onResume() 
+{  super.onResume(); }
+
+//150 android 保存和恢复canvas设置
+canvas.save();//保存设置
+//之间做一些变换，转移，拉伸等操作
+canvas.restore();//恢复设置
+
+//151 android 地图搜索
+Intent search = new Intent(Intent.ACTION_WEB_SEARCH);
+search.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+search.putExtra(SearchManager.QUERY, "new york");
+startActivity(search);
+
+//152 android 设置播放器音量
+mediaPlayer.setVolume(10, 10);
+
+//153 android 播放器跳转到具体位置
+mediaPlayer.seekTo(0);//0的单位是毫秒
+
+//154 android 获得手机号码和手机串号(IMEI)
+TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE); 
+String imei = telephonyManager.getDeviceId(); 
+String tel = telephonyManager.getLine1Number(); 
+
+//155 android 闹钟设置代码
+//接受闹铃并显示提示
+class AlarmReceiver extends BroadcastReceiver { 
+public void onReceive(Context context, Intent intent) { 
+Toast.makeText(context, "时间到", Toast.LENGTH_LONG).show(); 
+}　}
+// 实例化自定义的 BroadcastReceiver
+AlarmReceiver receiver = new AlarmReceiver();
+IntentFilter filter = new IntentFilter();
+filter.addAction("android.intent.action.BOOT_COMPLETED");    
+// 以编程方式注册  BroadcastReceiver 。xml配置方式见下
+// 一般在 OnStart 时注册，在 OnStop 时取消注册
+registerReceiver(receiver, filter);
+Intent intent = new Intent(this, AlarmReceiver.class); 
+PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0); 
+AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE); 
+//一次闹铃
+alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +1000, pendingIntent); 
+//周期闹铃
+alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, 10000, pendingIntent); 
+//xml配置
+<receiver android:name=".AlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+</receiver>
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+//156 android 接收系统启动完毕的broadcast的权限
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+//157 android 多媒体录制
+MediaRecorder recorder = new MediaRecorder();
+recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA); //视频
+recorder.setAudioSource(MediaRecorder.AudioSource.MIC); //音频
+recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP); 
+recorder.setOutputFile("/sdcard/media/1.3gp");
+try {
+recorder.prepare();
+} catch (IllegalStateException e) {e.printStackTrace();} 
+catch (IOException e) {e.printStackTrace();}
+recorder.start();
+
+//158 android 视频播放
+VideoView videoView = new VideoView(this); 
+setContentView(videoView); 
+videoView.setVideoURI(Uri.parse("/sdcard/1.3gp")); 
+videoView.requestFocus(); 
+videoView.start();
+
+//159 android 绘制文字
+canvas.drawText(str, 30, 30, paint); 
+
+//160 android 判断QWERTY键盘硬件是否滑出
+Configuration config = getResources().getConfiguration();
+if(config.hardKeyboardHidden == Configuration.KEYBOARDHIDDEN_NO)
+{}
+else if(config.hardKeyboardHidden == Configuration.KEYBOARDHIDDEN_YES)
+{}
+
+//161 android 清除手机cookie
+CookieSyncManager.createInstance(getApplicationContext());
+CookieManager.getInstance().removeAllCookie();
+
+//162 android 读写文件
+//读：
+public String ReadSettings(Context context){ 
+      FileInputStream fIn = null; 
+      InputStreamReader isr = null;
+  char[] inputBuffer = new char[255]; 
+  String data = null; 
+  try{ 
+  fIn = openFileInput("settings.dat");  
+   isr = new InputStreamReader(fIn); 
+    isr.read(inputBuffer); 
+    data = new String(inputBuffer); 
+    Toast.makeText(context, "Settings read",Toast.LENGTH_SHORT).show(); 
+   } 
+    catch (Exception e) {    
+    e.printStackTrace(); 
+     Toast.makeText(context, "Settings not read",Toast.LENGTH_SHORT).show(); 
+     } 
+    finally { 
+  try { 
+       isr.close(); 
+fIn.close(); 
+} catch (IOException e) { 
+e.printStackTrace(); 
+} } 
+return data; } 
+//写：
+public void WriteSettings(Context context, String data){ 
+FileOutputStream fOut = null; 
+OutputStreamWriter osw = null; 
+try{ 
+fOut = openFileOutput("settings.dat",MODE_PRIVATE);   
+  osw = new OutputStreamWriter(fOut); 
+  osw.write(data); 
+   osw.flush(); 
+   Toast.makeText(context, "Settings saved",Toast.LENGTH_SHORT).show();   } 
+   catch (Exception e) {  
+   e.printStackTrace(); 
+   Toast.makeText(context, "Settings not saved",Toast.LENGTH_SHORT).show();   } 
+  finally { 
+   try { 
+      osw.close(); 
+         fOut.close(); 
+} catch (IOException e) { 
+     e.printStackTrace();   } }   }
+
+//163 android 判断不可卸载的程序
+PackageManager mPm = getPackageManager();
+List<ApplicationInfo> installedAppList = 
+mPm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+for (ApplicationInfo appInfo :installedAppList) {
+boolean flag = false;
+if ((appInfo.flags &ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0){
+   // Updated system app
+    flag = true;
+} else if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+// Non-system app
+flag = true;
+}
+if (flag) {
+appList.add(appInfo);
+}　}
+
+//164 android 判断是否飞行模式
+boolean isEnabled = Settings.System.getInt(
+context.getContentResolver(), 
+Settings.System.AIRPLANE_MODE_ON, 0) == 1;

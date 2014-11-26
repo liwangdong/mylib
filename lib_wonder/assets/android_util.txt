@@ -1,0 +1,523 @@
+Android常用的工具类
+
+1、Android拦截短信
+
+一、AndroidManifest.xml
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/> 
+    
+     <receiver android:name=".SMSReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>        
+二 、广播类
+
+package com.rekoo.blocksms;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.telephony.SmsMessage;
+import android.widget.Toast;
+
+
+public class SMSReceiver extends BroadcastReceiver {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        System.out.println("SMSReceiver, isOrderedBroadcast()="
+                + isOrderedBroadcast());
+        
+        Bundle bundle = intent.getExtras();
+        Object messages[] = (Object[]) bundle.get("pdus");
+        SmsMessage smsMessage[] = new SmsMessage[messages.length];
+        for (int n = 0; n < messages.length; n++) {
+            smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
+            //如果短信内容包含“123”，则拦截短信。用户收不到短信了。
+            if(smsMessage[n].getMessageBody().contains("123")){
+                //退出广播
+//                this.abortBroadcast();
+                System.out.println("====222===打印===");
+            }
+            Toast.makeText(context, "我是11111111", 1).show();
+            System.out.println("发件人："+smsMessage[n].getOriginatingAddress()+" 短信内容："+smsMessage[n].getMessageBody()+" "+smsMessage[n].getIndexOnIcc());
+        }
+        
+    }
+
+}
+
+2、手机是否联网？
+
+ <!-- 检测网络状态 权限--> 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+package com.rekoo.sms;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+public class NetHelper {
+    /**     * 是否联网网络
+     * */
+    public static boolean IsHaveInternet(final Context context) {
+        try {
+            ConnectivityManager manger = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo info = manger.getActiveNetworkInfo();
+            return (info!=null && info.isConnected());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}
+
+3、Application的使用
+
+一、Application类简介（相当于“全局变量”）
+
+    * Base class for those who need to maintain global application state. You can
+    * provide your own implementation by specifying its name in your
+    * AndroidManifest.xml's &lt;application&gt; tag, which will cause that class
+    * to be instantiated for you when the process for your application/package is
+    * created.
+    这段话这么翻译或许会通顺些：application类是一个基类，这个基类的作用是为了获取整个应用程序的状态。你可以自己继承或实现这个类，当你要使用自己拓展的application类的时候，只要在manifest.xml中的<application>标签中name应用自己定义的类就行了，这样做的结果是：当你的应用程序或者包所在的进程创建的时候，这个类就会被实例化。
+        
+    就是说application是用来保存全局变量的，并且是在package创建的时候就跟着存在了。所以当我们需要创建全局变量的时候，不需 要再像j2se那样需要创建public权限的static变量，而直接在application中去实现。只需要调用Context的getApplicationContext或者Activity的getApplication方法来获得一个application对象，再做出相应 的处理。
+    
+二、具体用法
+
+    配置文件：
+        <application
+            android:allowBackup="true"            android:icon="@drawable/ic_launcher"            android:label="@string/app_name"            android:theme="@style/AppTheme" 
+            //加入自定义的Application类
+            android:name="com.rekoo.quicktransfer.Applications"
+        >
+
+    public class Applications extends Application{
+    
+        List<AppPackageInfo> appInfos;
+        public List<AppPackageInfo> getAppInfos()
+        {
+            return appInfos;
+        }
+        public void setAppInfos(List<AppPackageInfo> appInfos)
+        {
+            this.appInfos = appInfos;
+        }
+    }
+    
+    ** 利用Context对象，获取到application对象
+    
+    1、存取到 appInfos 
+    
+    ((Applications)WelcomePageActivity.this.getApplication()).setAppInfos(mlistAppInfo);
+    
+    2、取 appInfos 的值
+    
+    ((Applications)LogicActivity.this.getApplication()).getAppInfos();
+
+4、http请求
+
+    
+    
+    private static String baseUrl = "http://59.108.111.76:10001/?";
+    private static HttpResponse httpResponse;
+    private static HttpEntity httpEntity;
+    private static InputStream inputStream;
+    
+    public static void sendToCode(String authorCode){
+        
+        String url = baseUrl+"acode="+authorCode;
+        System.out.println("url="+url);
+        
+        try        {
+            int jsonObject_rc = -1;
+            //生成一个请求对象
+            HttpGet httpPost=new HttpGet(url);
+            //生成一个http客户端对象
+            HttpClient httpClient=new DefaultHttpClient(); 
+            httpResponse=httpClient.execute(httpPost);
+
+            System.out.println("codeStatus:"+httpResponse.getStatusLine().getStatusCode());
+
+            /**请求发送成功，并得到响应**/
+            if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                httpEntity=httpResponse.getEntity();
+                inputStream=httpEntity.getContent();
+                BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream));
+                String result="";
+                String line="";
+                while((line=bufferedReader.readLine()) != null){
+                    result=result+line;
+                }
+                System.out.println("result="+result);
+                
+                /* //======解析 Json数据
+                jsonObject_rc = new JSONObject(result.toString()).getInt("rc");
+                if (jsonObject_rc == 0) {
+                    JSONObject jsonObject_data = new JSONObject(result.toString()).getJSONObject("data");
+                    //获取子项...
+//                    int type = jsonObject_data.getInt("type");
+                    int ptype = jsonObject_data.getJSONObject("type").getInt("ptype");
+                    int pnum = jsonObject_data.getJSONObject("type").getInt("pnum");
+                    System.out.println("====type:num==="+ptype+","+pnum);
+                    int num = jsonObject_data.getInt("num");
+                    System.out.println("====奖励次数："+num);
+                    
+                }*/            }else {
+                //连接失败...
+                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+5、int 和 byte[]互转
+
+    /**     * int类型转byte[]类型
+     */
+    public static byte[] int2ByteArray(int i) {   
+        byte[] result = new byte[4];   
+        result[0] = (byte)((i >> 24) & 0xFF);
+        result[1] = (byte)((i >> 16) & 0xFF);
+        result[2] = (byte)((i >> 8) & 0xFF); 
+        result[3] = (byte)(i & 0xFF);
+        return result;
+    }
+    /** 
+     * 将4字节的byte数组转成int值 
+     */  
+    public static int byteArray2int(byte[] b){  
+        byte[] a = new byte[4];  
+        int i = a.length - 1,j = b.length - 1;  
+        for (; i >= 0 ; i--,j--) {//从b的尾部(即int值的低位)开始copy数据  
+            if(j >= 0)  
+                a[i] = b[j];  
+            else  
+                a[i] = 0;//如果b.length不足4,则将高位补0  
+        }  
+        int v0 = (a[0] & 0xff) << 24;//&0xff将byte值无差异转成int,避免Java自动类型提升后,会保留高位的符号位  
+        int v1 = (a[1] & 0xff) << 16;  
+        int v2 = (a[2] & 0xff) << 8;  
+        int v3 = (a[3] & 0xff) ;  
+        return v0 + v1 + v2 + v3;  
+    }
+
+6、int和String互转
+1》String.valueOf(i)
+2》 Integer.toString(i)
+3》 i+""
+7、int转为像素值
+private int getPixels(int dpValue) {
+        Resources r = activity.getResources();
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dpValue, r.getDisplayMetrics());
+        return px;
+    }
+8、Java多线程编程环境中单例模式的实现
+
+【常用的单例模式】
+
+class RekooSDk{
+private static RekooSDk instance;
+private RekooSDk(){
+
+    }
+public static Singleton getInstance(){          
+    if (instance == null)          
+        synchronized(instance){          
+            if(instance == null)          
+                instance = new RekooSDk();          
+        }          
+    return instance;           
+}  
+}
+         让我们来看一下这个代码是如何工作的：首先当一个线程发出请求后，会先检查instance是否为null，如果不是则直接返回其内容，这样避免了进入synchronized块所需要花费的资源。其次，即使第2节提到的情况发生了，两个线程同时进入了第一个if判断，那么他们也必须按照顺序执行synchronized块中的代码，第一个进入代码块的线程会创建一个新的Singleton实例，而后续的线程则因为无法通过if判断，而不会创建多余的实例。
+         上述描述似乎已经解决了我们面临的所有问题，但实际上，从JVM的角度讲，这些代码仍然可能发生错误。
+         对于JVM而言，它执行的是一个个Java指令。在Java指令中创建对象和赋值操作是分开进行的，也就是说instance = new Singleton();语句是分两步执行的。但是JVM并不保证这两个操作的先后顺序，也就是说有可能JVM会为新的Singleton实例分配空间，然后直接赋值给instance成员，然后再去初始化这个Singleton实例。这样就使出错成为了可能，我们仍然以A、B两个线程为例：
+1.         A、B线程同时进入了第一个if判断
+2.         A首先进入synchronized块，由于instance为null，所以它执行instance = new Singleton();
+3.         由于JVM内部的优化机制，JVM先画出了一些分配给Singleton实例的空白内存，并赋值给instance成员（注意此时JVM没有开始初始化这个实例），然后A离开了synchronized块。
+4.         B进入synchronized块，由于instance此时不是null，因此它马上离开了synchronized块并将结果返回给调用该方法的程序。
+5.         此时B线程打算使用Singleton实例，却发现它没有被初始化，于是错误发生了。
+4       通过内部类实现多线程环境中的单例模式
+为了实现慢加载，并且不希望每次调用getInstance时都必须互斥执行，最好并且最方便的解决办法如下：
+
+Java代码 
+public class Singleton{          
+    private Singleton(){          
+        …          
+    }          
+    private static class SingletonContainer{          
+        private static Singleton instance = new Singleton();          
+    }          
+    public static Singleton getInstance(){          
+        return SingletonContainer.instance;          
+    }          
+}       
+    JVM内部的机制能够保证当一个类被加载的时候，这个类的加载过程是线程互斥的。这样当我们第一次调用getInstance的时候，JVM能够帮我们保证instance只被创建一次，并且会保证把赋值给instance的内存初始化完毕，这样我们就不用担心3.2中的问题。此外该方法也只会在第一次调用的时候使用互斥机制，这样就解决了3.1中的低效问题。最后instance是在第一次加载SingletonContainer类时被创建的，而SingletonContainer类则在调用getInstance方法的时候才会被加载，因此也实现了惰性加载。
+
+9、long转String
+Long.toString(long);
+10、MD5加密
+
+import java.security.MessageDigest;
+
+
+public class Md5
+{
+
+    /**     * MD5加密
+     * 约定字符串："zhaonimei!@#AMN"
+     */
+    public static void main(String[] args)
+    {    
+        String str = "713F813742FA7FAE7A10505CDDA4321" + "zhaonimei!@#AMN";
+        String test = MD5(str);
+        System.out.println("加密后："+test);
+    }
+    
+    //加密
+    public static String MD5(String inStr) {   
+          MessageDigest md5 = null;   
+          try {   
+           md5 = MessageDigest.getInstance("MD5");   
+          } catch (Exception e) {   
+           System.out.println(e.toString());   
+           e.printStackTrace();   
+           return "";   
+          }   
+          char[] charArray = inStr.toCharArray();   
+          byte[] byteArray = new byte[charArray.length];   
+          
+          for (int i = 0; i < charArray.length; i++)   
+           byteArray[i] = (byte) charArray[i];   
+          
+          byte[] md5Bytes = md5.digest(byteArray);   
+          
+          StringBuffer hexValue = new StringBuffer();   
+          
+          for (int i = 0; i < md5Bytes.length; i++) {   
+           int val = ((int) md5Bytes[i]) & 0xff;   
+           if (val < 16)   
+            hexValue.append("0");   
+           hexValue.append(Integer.toHexString(val));   
+          }   
+          
+          return hexValue.toString();   
+         }   
+
+}
+
+11、Random随机数公式
+产生Min-Max之间的数字
+   实现原理：
+      Math.round(Math.random()*(Max-Min)+Min);
+12、String 转 int
+int key = Integer.parseInt(string)；
+13、Android发短信
+
+权限：
+    <!-- 短信相关的权限 -->
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission> 
+    <uses-permission android:name="android.permission.READ_SMS"></uses-permission>
+
+
+
+/**    * 发送短信
+    * destinationAddress:收信人的手机号码
+    * scAddress:发信人的使命召唤2中文版使命召唤之联合进攻已经打上了免CD补丁手机号码
+    * text:发送信息的内容
+    * sentIntent:发送是否成功的回执,用于监听短信是否发送成功
+    * DeliveryIntent:接收是否成功的回执,用于监听短信对方是否接收成功
+    */
+    public static void sendSMS(Context context){
+        //发送内容
+        String smstext = "短信内容"；
+        //测试...
+        System.out.println("smstext="+smstext);
+        
+        Intent sentIntent = new Intent("SENT_SMS_ACTION");
+        PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, sentIntent,0);
+        Intent deliverIntent = new Intent("DELIVERED_SMS_ACTION");
+        PendingIntent deliverPI = PendingIntent.getBroadcast(context, 0,deliverIntent, 0);
+        
+        SmsManager smsManager = SmsManager.getDefault(); 
+        smsManager.sendTextMessage(Constant.connectNum, null, smstext, sentPI, deliverPI);
+        
+    }
+
+14、获取手机mac地址
+
+/**     * 获取mac地址
+     * */
+    public static String getLocalMacAddress(Context context) {
+        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = wifi.getConnectionInfo();
+        return info.getMacAddress();
+    }
+
+15、获取meta-data的值
+
+应用Sence:
+
+    <application
+        android:allowBackup="true"        android:icon="@drawable/ic_launcher"        android:label="@string/app_name"        android:theme="@style/AppTheme" >
+        
+        <meta-data android:value="40080001" android:name="DIANXIN_CHANNEL"/>        .
+        .
+        .
+    </application>    
+
+方法：
+
+        /**         * 获取到 meta-data的数据
+         * */
+        private static String getMetaData(Context context){
+            ApplicationInfo appInfo;
+            try            {
+                appInfo = context.getPackageManager()
+                        .getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
+                int msg=appInfo.metaData.getInt("DIANXIN_CHANNEL");
+                System.out.println("msg="+msg);
+                return String.valueOf(msg);
+            }
+            catch (NameNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+            return "未找到";
+        }
+    
+
+16、时间戳
+System.currentTimeMillis();
+17、解析Json数据
+
+格式：{"rc":0,"data":{"openid":x,"token":x},"code":{"type":{"num":5}}}
+
+//rc节点
+int rc = new JSONObject(result.toString()).getInt("rc");
+
+//data节点
+JSONObject jsonObject_data = new JSONObject(result.toString()).getJSONObject("data");
+
+//openid节点
+String openid =  jsonObject_data.getInt("openid")；
+
+//num节点
+JSONObject jsonObject_data = new JSONObject(result.toString()).getJSONObject("code");
+int num =jsonObject_data.getJSONObject("type").getInt("num");
+
+18、消息队列+Asynctask+Callback
+
+一、Socket使用
+    
+1、Socket客户端，发送请求，启用子线程执行（使用BlockingQueue阻塞消息队列控制）
+ 
+     //1、定义消息队列
+    public static BlockingQueue<Integer> QUEUE = new LinkedBlockingQueue<Integer>();
+    
+    //2、放入消息队列值
+    Constants.QUEUE.put(num);
+
+    public class SendSockets extends Thread{
+        @Override
+        public void run(){
+            
+            while(true){
+            //3、阻塞消息队列（如果QUEUE不为空，取出执行之后操作）
+            int num = Constants.QUEUE.take();
+            
+            }
+            
+        }
+    }
+
+2、Socket服务端，用Asynctask实现多线程接受（doInBackground子线程，onProgressUpdate主线程更新UI）    
+    
+    public class ReceiveSocket extends AsyncTask<String, String, Boolean>{
+        
+        //运行于子线程中
+        @Override
+        protected Boolean doInBackground(String... params){
+            while(true){
+                
+                //...Socket接受返回来的消息
+                
+                args_in：为获取到的消息内容
+                
+                //1、发送消息到主线程
+                publishProgress(args_in);
+                
+            }
+        }
+        //运行于主线程，用于更新主线程数据（UI）
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            //2、...操作，更新主线程
+            
+            super.onProgressUpdate(values);
+            //回调callback
+            isSuccess(args_in, callback);
+        }
+    }
+    
+    * 关于Asynctask的详解
+    1、onPreExecute()
+    高负载代码执行之前调用 ，通常用来显示一个进度条，在主线程中执行
+    2、doInBackGround() 
+     onPreExecute() 执行完后调用，此方法通常就是放高负载代码的，比如远程请求，巨大数据载入等，你不用新建线程来包装此方法 AsyncTask（或子类）会自动在新线程中调用此方法
+    3、onPostExecute(Result)
+    在doInBackground完成之后调用，一般是设置结果，取消第一个方法显示的进度条。
+    4、onProgressUpdate（） 
+    一般用来更新第一个方法显示的进度条，什么下载了50% 51% 。。。 
+    
+二、Callback回调
+
+    1、新建接口
+    public interface Callback{
+        void success(String success);
+        void fail(String fail);
+    }
+    
+    2、作为参数，传进执行回调的方法内 //匿名类
+        ShareToQQ.Share(new Callback(){
+                    @Override
+                    public void success(String success)
+                    {
+                        super.success(success);
+                        //success为回调回来的内容
+                        System.out.println("回调的数据："+success);
+                    }
+                    @Override
+                    public void fail(String fail)
+                    {
+                        super.fail(fail);
+                    }
+                });
+    4、Share方法的实现
+    
+        public void Share（Callback callback）{
+            callback.success("成功...");
+        }
+
+19、页数公式
+页数 = (总数+PAGE_SIZE-1)/PAGE_SIZE
+20、用keystore给apk签名
+
+用jdk自带工具jarsigner.exe 
+
+命令行到 
+C:\Program Files\Java\jdk1.6.0_24\bin>jarsigner.exe -verbose -keystore d:\aa\debug.kestore -storepass android -signedjar d:\aa\gblnn_signed.apk d:\aa\gblnn.apk androiddebugkey
+
+规范：
+>jarsigner.exe -verbose -keystore keystore文件路径 -storepass 密码 -signedjar 要生成的新apk路径 待签名的apk路径 alias名称（为希望使用的签名证书中的alias名称）
