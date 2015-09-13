@@ -31,8 +31,7 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// 添加Activity到堆栈
 		AppManager.getInstance().addActivity(this);
-		Log.e("test", "hehe");
-	} 
+	}
 	/**
 	 * 获取一个intent
 	 * 
