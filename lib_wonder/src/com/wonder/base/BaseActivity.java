@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.wonder.app.AppManager;
@@ -30,6 +31,7 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// 添加Activity到堆栈
 		AppManager.getInstance().addActivity(this);
+		Log.e("test", "hehe");
 	} 
 	/**
 	 * 获取一个intent
